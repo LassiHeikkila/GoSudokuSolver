@@ -14,6 +14,47 @@ type SubGrid struct {
 	contents [3][3]int
 }
 
+type Numbers map[int]bool
+
+func NewNumbers() Numbers {
+	return map[int]bool{
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
+	}
+}
+
+func (n Numbers) Contains(i int) bool {
+	_, ok := n[i]
+	return ok
+}
+
+func (n Numbers) MissingNumbers() []int {
+	var r []int
+	for num, _ := range n {
+		if n[num] == false {
+			r = append(r, num)
+		}
+	}
+	return r
+}
+
+func (n Numbers) ContainedNumbers() []int {
+	var r []int
+	for num, _ := range n {
+		if n[num] == true {
+			r = append(r, num)
+		}
+	}
+	return r
+}
+
 func NewGrid(contents [9][9]int) *Grid {
 	return &Grid{contents: contents}
 }
@@ -41,17 +82,7 @@ func (g *Grid) ContainsOnColumn(n, x int) bool {
 }
 
 func (g *Grid) ValidRow(y int) bool {
-	found := map[int]bool{
-		1: false,
-		2: false,
-		3: false,
-		4: false,
-		5: false,
-		6: false,
-		7: false,
-		8: false,
-		9: false,
-	}
+	found := NewNumbers()
 	for _, value := range g.contents[y] {
 		if val, ok := found[value]; ok && !val {
 			found[value] = true
@@ -64,17 +95,7 @@ func (g *Grid) ValidRow(y int) bool {
 }
 
 func (g *Grid) ValidColumn(x int) bool {
-	found := map[int]bool{
-		1: false,
-		2: false,
-		3: false,
-		4: false,
-		5: false,
-		6: false,
-		7: false,
-		8: false,
-		9: false,
-	}
+	found := NewNumbers()
 
 	for _, value := range g.contents {
 		if val, ok := found[value[x]]; ok && !val {
@@ -157,17 +178,7 @@ func (s *SubGrid) ValueAt(x, y int) int {
 }
 
 func (s *SubGrid) Valid() bool {
-	found := map[int]bool{
-		1: false,
-		2: false,
-		3: false,
-		4: false,
-		5: false,
-		6: false,
-		7: false,
-		8: false,
-		9: false,
-	}
+	found := NewNumbers()
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 3; y++ {
 			if val, ok := found[s.contents[x][y]]; ok && !val {
