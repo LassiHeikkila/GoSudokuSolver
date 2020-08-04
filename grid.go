@@ -96,6 +96,23 @@ func (g *Grid) Solved() bool {
 	return true
 }
 
+func (g *Grid) GetColumn(x int) [9]int {
+	var column [9]int
+
+	for n, col := range g.contents {
+		column[n] = col[x]
+	}
+	return column
+}
+
+func (g *Grid) GetRow(y int) [9]int {
+	var row [9]int
+	for n, val := range g.contents[y] {
+		row[n] = val
+	}
+	return row
+}
+
 func (g *Grid) Valid() bool {
 	for i := 0; i < len(g.contents); i++ {
 		if !g.ValidRow(i) {
