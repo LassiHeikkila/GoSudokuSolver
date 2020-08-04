@@ -67,19 +67,19 @@ func TestSubGridFunctions(t *testing.T) {
 		{3, 7, 0},
 	}
 
-	test_data_0_1 := [3][3]int{
+	test_data_1_0 := [3][3]int{
 		{7, 3, 0},
 		{5, 9, 6},
 		{0, 0, 0},
 	}
 
-	test_data_0_2 := [3][3]int{
+	test_data_2_0 := [3][3]int{
 		{8, 0, 5},
 		{7, 0, 3},
 		{0, 9, 0},
 	}
 
-	test_data_1_0 := [3][3]int{
+	test_data_0_1 := [3][3]int{
 		{0, 0, 0},
 		{0, 8, 0},
 		{9, 3, 0},
@@ -91,19 +91,19 @@ func TestSubGridFunctions(t *testing.T) {
 		{1, 7, 0},
 	}
 
-	test_data_1_2 := [3][3]int{
+	test_data_2_1 := [3][3]int{
 		{3, 7, 8},
 		{9, 1, 0},
 		{0, 0, 6},
 	}
 
-	test_data_2_0 := [3][3]int{
+	test_data_0_2 := [3][3]int{
 		{7, 0, 9},
 		{0, 0, 0},
 		{2, 5, 0},
 	}
 
-	test_data_2_1 := [3][3]int{
+	test_data_1_2 := [3][3]int{
 		{0, 4, 5},
 		{0, 6, 0},
 		{8, 0, 7},
@@ -169,8 +169,8 @@ func TestSubGridFunctions(t *testing.T) {
 	if !sub_0_0.Contains(9) {
 		t.Error("Could not find 9 in subgrid [0,0]")
 	}
-	if !sub_0_1.Contains(5) {
-		t.Error("Could not find 5 in subgrid [0,1]")
+	if !sub_0_1.Contains(8) {
+		t.Error("Could not find 8 in subgrid [0,1]")
 	}
 	if !sub_2_2.Contains(8) {
 		t.Error("Could not find 8 in subgrid [2,2]")
@@ -190,5 +190,65 @@ func TestSubGridFunctions(t *testing.T) {
 	}
 	if sub_2_2.ValueAt(2, 0) != 2 {
 		t.Error("Wrong value for subgrid [2,2] at [2,0]")
+	}
+}
+
+func TestGridValidityVerification(t *testing.T) {
+	valid_board := [9][9]int{
+		{0, 9, 6, 7, 3, 0, 8, 0, 5},
+		{0, 0, 0, 5, 9, 6, 7, 0, 3},
+		{3, 7, 0, 0, 0, 0, 0, 9, 0},
+		{0, 0, 0, 0, 5, 0, 3, 7, 8},
+		{0, 8, 0, 0, 0, 0, 9, 1, 0},
+		{9, 3, 0, 1, 7, 0, 0, 0, 6},
+		{7, 0, 9, 0, 4, 5, 0, 8, 2},
+		{0, 0, 0, 0, 6, 0, 5, 3, 0},
+		{2, 5, 0, 8, 0, 7, 4, 0, 0},
+	}
+	valid_grid := NewGrid(valid_board)
+
+	invalid_board := [9][9]int{
+		{0, 9, 6, 7, 3, 0, 9, 0, 5},
+		{0, 0, 0, 5, 9, 6, 7, 0, 3},
+		{3, 7, 0, 0, 0, 0, 0, 9, 0},
+		{0, 0, 0, 0, 5, 0, 3, 7, 8},
+		{0, 8, 3, 0, 0, 0, 9, 1, 0},
+		{9, 3, 0, 1, 7, 0, 0, 0, 6},
+		{7, 0, 9, 0, 4, 5, 0, 8, 2},
+		{0, 0, 0, 0, 6, 0, 5, 3, 0},
+		{2, 5, 0, 8, 0, 7, 4, 0, 0},
+	}
+
+	invalid_grid := NewGrid(invalid_board)
+
+	fmt.Printf("Valid test data:\n%v\n", valid_grid)
+	for i := 0; i < 9; i++ {
+		if !valid_grid.ValidRow(i) {
+			t.Error("Invalid row detected in valid board")
+		}
+		if !valid_grid.ValidColumn(i) {
+			t.Error("Invalid column detected in valid board")
+		}
+	}
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			sub := valid_grid.GetSubGrid(i, j)
+			if !sub.Valid() {
+				t.Error("Invalid subgrid claimed in valid board")
+			}
+		}
+	}
+
+	fmt.Printf("Invalid test data:\n%v\n", invalid_grid)
+	if invalid_grid.ValidRow(0) {
+		t.Error("Valid row claimed for invalid board")
+	}
+	if invalid_grid.ValidColumn(6) {
+		t.Error("Valid column claimed for invalid board")
+	}
+	invalid_subgrid := invalid_grid.GetSubGrid(0, 1)
+	fmt.Printf("Checking that this subgrid is invalid:\n%v\n", &invalid_subgrid)
+	if invalid_subgrid.Valid() {
+		t.Errorf("Valid subgrid claimed for invalid subgrid [0,1]:\n%v\n", &invalid_subgrid)
 	}
 }

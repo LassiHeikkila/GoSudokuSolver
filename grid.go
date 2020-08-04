@@ -38,14 +38,61 @@ func (g *Grid) ContainsOnColumn(n, x int) bool {
 		}
 	}
 	return false
+}
 
+func (g *Grid) ValidRow(y int) bool {
+	found := map[int]bool{
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
+	}
+	for _, value := range g.contents[y] {
+		if val, ok := found[value]; ok && !val {
+			found[value] = true
+		} else if ok {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (g *Grid) ValidColumn(x int) bool {
+	found := map[int]bool{
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
+	}
+
+	for _, value := range g.contents {
+		if val, ok := found[value[x]]; ok && !val {
+			found[value[x]] = true
+		} else if ok {
+			return false
+		}
+	}
+	return true
 }
 
 func (g *Grid) SubGridAt(x, y int) SubGrid {
 	return g.GetSubGrid(x/3, y/3)
 }
 
-// [x,y] is which small square you want, [0,0] top-left, [2,2] bottom-right
+// [x,y] is which small square you want,
+// [0,0] top-left, [2,2] bottom-right
+// [0,1] middle-left [1,0] top-middle
 func (g *Grid) GetSubGrid(x, y int) SubGrid {
 	if x > 2 || y > 2 || x < 0 || y < 0 {
 		panic("Invalid arguments")
@@ -56,10 +103,11 @@ func (g *Grid) GetSubGrid(x, y int) SubGrid {
 	y *= 3
 
 	var s SubGrid
-
-	copy(s.contents[0][:], g.contents[x][y:y+3])
-	copy(s.contents[1][:], g.contents[x+1][y:y+3])
-	copy(s.contents[2][:], g.contents[x+2][y:y+3])
+	for i := 0; i < len(s.contents); i++ {
+		for j := 0; j < len(s.contents[i]); j++ {
+			s.contents[j][i] = g.contents[y+j][x+i]
+		}
+	}
 
 	return s
 }
@@ -106,4 +154,47 @@ func (s *SubGrid) Contains(n int) bool {
 
 func (s *SubGrid) ValueAt(x, y int) int {
 	return s.contents[y][x]
+}
+
+func (s *SubGrid) Valid() bool {
+	found := map[int]bool{
+		1: false,
+		2: false,
+		3: false,
+		4: false,
+		5: false,
+		6: false,
+		7: false,
+		8: false,
+		9: false,
+	}
+	for x := 0; x < 3; x++ {
+		for y := 0; y < 3; y++ {
+			if val, ok := found[s.contents[x][y]]; ok && !val {
+				found[s.contents[x][y]] = true
+			} else if ok {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (s *SubGrid) String() string {
+	var str string
+	for x := 0; x < len(s.contents); x++ {
+		for y := 0; y < len(s.contents[x]); y++ {
+			if y != 0 {
+				str += " "
+			}
+			if s.contents[x][y] != 0 {
+				str += fmt.Sprintf("%v", s.contents[x][y])
+			} else {
+				str += string('\u25A1')
+			}
+		}
+		str += "\n"
+	}
+
+	return str
 }
