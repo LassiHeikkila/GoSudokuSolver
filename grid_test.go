@@ -222,6 +222,9 @@ func TestGridValidityVerification(t *testing.T) {
 	invalid_grid := NewGrid(invalid_board)
 
 	fmt.Printf("Valid test data:\n%v\n", valid_grid)
+	if !valid_grid.Valid() {
+		t.Error("Valid grid reported as invalid!")
+	}
 	for i := 0; i < 9; i++ {
 		if !valid_grid.ValidRow(i) {
 			t.Error("Invalid row detected in valid board")
@@ -240,6 +243,9 @@ func TestGridValidityVerification(t *testing.T) {
 	}
 
 	fmt.Printf("Invalid test data:\n%v\n", invalid_grid)
+	if invalid_grid.Valid() {
+		t.Error("Invalid grid reported as valid")
+	}
 	if invalid_grid.ValidRow(0) {
 		t.Error("Valid row claimed for invalid board")
 	}
@@ -250,5 +256,70 @@ func TestGridValidityVerification(t *testing.T) {
 	fmt.Printf("Checking that this subgrid is invalid:\n%v\n", &invalid_subgrid)
 	if invalid_subgrid.Valid() {
 		t.Errorf("Valid subgrid claimed for invalid subgrid [0,1]:\n%v\n", &invalid_subgrid)
+	}
+}
+
+func TestSolvedChecking(t *testing.T) {
+	solved_valid_board := [9][9]int{
+		{4, 2, 1, 9, 7, 3, 5, 8, 6},
+		{9, 8, 3, 2, 5, 6, 4, 1, 7},
+		{7, 6, 5, 4, 1, 8, 9, 3, 2},
+		{1, 5, 7, 6, 4, 9, 3, 2, 8},
+		{3, 9, 8, 7, 2, 5, 6, 4, 1},
+		{6, 4, 2, 3, 8, 1, 7, 5, 9},
+		{8, 7, 6, 5, 3, 2, 1, 9, 4},
+		{5, 1, 9, 8, 6, 4, 2, 7, 3},
+		{2, 3, 4, 1, 9, 7, 8, 6, 5},
+	}
+	solved_invalid_board := [9][9]int{
+		{4, 2, 1, 9, 4, 3, 5, 8, 6},
+		{9, 8, 3, 2, 5, 6, 4, 1, 7},
+		{7, 6, 5, 4, 1, 8, 9, 3, 2},
+		{1, 5, 7, 6, 4, 9, 3, 2, 8},
+		{3, 1, 8, 7, 2, 5, 6, 4, 1},
+		{6, 4, 2, 3, 8, 1, 7, 5, 9},
+		{8, 7, 6, 5, 3, 2, 8, 9, 4},
+		{5, 1, 9, 8, 6, 4, 2, 7, 3},
+		{2, 3, 4, 1, 9, 7, 8, 6, 5},
+	}
+	unsolved_valid_board := [9][9]int{
+		{1, 4, 2, 0, 9, 0, 0, 0, 8},
+		{7, 0, 6, 8, 0, 3, 9, 0, 0},
+		{3, 9, 0, 7, 1, 0, 0, 6, 0},
+		{9, 0, 1, 3, 8, 5, 4, 2, 6},
+		{2, 0, 0, 0, 6, 7, 3, 0, 1},
+		{0, 0, 3, 0, 0, 0, 8, 7, 0},
+		{0, 0, 9, 1, 7, 0, 5, 4, 2},
+		{4, 0, 0, 6, 0, 0, 0, 0, 3},
+		{8, 0, 5, 4, 0, 2, 0, 9, 0},
+	}
+	unsolved_invalid_board := [9][9]int{
+		{1, 4, 2, 0, 9, 0, 0, 0, 8},
+		{7, 0, 6, 8, 0, 3, 9, 0, 0},
+		{3, 9, 0, 7, 1, 0, 0, 6, 0},
+		{9, 0, 1, 3, 8, 4, 4, 2, 6},
+		{2, 0, 0, 0, 6, 7, 3, 0, 1},
+		{0, 0, 3, 0, 0, 0, 8, 7, 0},
+		{0, 4, 9, 1, 7, 0, 5, 4, 2},
+		{4, 0, 0, 6, 0, 0, 0, 0, 3},
+		{8, 0, 5, 4, 0, 2, 0, 9, 0},
+	}
+
+	solved_valid_grid := NewGrid(solved_valid_board)
+	solved_invalid_grid := NewGrid(solved_invalid_board)
+	unsolved_valid_grid := NewGrid(unsolved_valid_board)
+	unsolved_invalid_grid := NewGrid(unsolved_invalid_board)
+
+	if !solved_valid_grid.Solved() {
+		t.Error("Solved & valid board reported as non-solved")
+	}
+	if solved_invalid_grid.Solved() {
+		t.Error("Solved & invalid board reported as solved")
+	}
+	if unsolved_valid_grid.Solved() {
+		t.Error("Unsolved & valid board reported as solved")
+	}
+	if unsolved_invalid_grid.Solved() {
+		t.Error("Unsolved & invalid board reported as solved")
 	}
 }

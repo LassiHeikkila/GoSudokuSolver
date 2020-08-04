@@ -81,6 +81,42 @@ func (g *Grid) ContainsOnColumn(n, x int) bool {
 	return false
 }
 
+func (g *Grid) Solved() bool {
+	if !g.Valid() {
+		return false
+	}
+
+	for x := 0; x < len(g.contents); x++ {
+		for y := 0; y < len(g.contents[x]); y++ {
+			if g.contents[x][y] == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (g *Grid) Valid() bool {
+	for i := 0; i < len(g.contents); i++ {
+		if !g.ValidRow(i) {
+			return false
+		}
+		if !g.ValidColumn(i) {
+			return false
+		}
+	}
+
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			sub := g.GetSubGrid(i, j)
+			if !sub.Valid() {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (g *Grid) ValidRow(y int) bool {
 	found := NewNumbers()
 	for _, value := range g.contents[y] {
