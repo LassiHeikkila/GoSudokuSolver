@@ -30,9 +30,32 @@ func NewNumbers() Numbers {
 	}
 }
 
+func NewNumbersFromVariadicArguments(nums ...int) Numbers {
+	res := NewNumbers()
+	for _, n := range nums {
+		res[n] = true
+	}
+	return res
+}
+
+func NewNumbersFromArray(d [9]int) Numbers {
+	return NewNumbersFromVariadicArguments(d[:]...)
+}
+
+func NewNumbersFromSubgrid(s [3][3]int) Numbers {
+	var nums []int
+	for _, r := range s {
+		nums = append(nums, r[:]...)
+	}
+	return NewNumbersFromVariadicArguments(nums...)
+}
+
 func (n Numbers) Contains(i int) bool {
-	_, ok := n[i]
-	return ok
+	exists, ok := n[i]
+	if ok {
+		return exists
+	}
+	return false
 }
 
 func (n Numbers) MissingNumbers() []int {
@@ -99,8 +122,8 @@ func (g *Grid) Solved() bool {
 func (g *Grid) GetColumn(x int) [9]int {
 	var column [9]int
 
-	for n, col := range g.contents {
-		column[n] = col[x]
+	for n, row := range g.contents {
+		column[n] = row[x]
 	}
 	return column
 }
@@ -213,6 +236,19 @@ func (g *Grid) String() string {
 	}
 
 	return s
+}
+
+func (g *Grid) Possible(x, y, n int) bool {
+	if NewNumbersFromArray(g.GetRow(y)).Contains(n) {
+		return false
+	}
+	if NewNumbersFromArray(g.GetColumn(x)).Contains(n) {
+		return false
+	}
+	if NewNumbersFromSubgrid(g.SubGridAt(x, y).contents).Contains(n) {
+		return false
+	}
+	return true
 }
 
 func (s *SubGrid) Contains(n int) bool {
