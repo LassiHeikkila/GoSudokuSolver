@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -13,9 +14,11 @@ const (
 	BACKTRACK = "backtrack"
 )
 
+var possibleStrategies = []string{BACKTRACK}
+
 var (
 	help       = flag.Bool("h", false, "Print help message")
-	strategy   = flag.String("strategy", BACKTRACK, "Which strategy to use [backtrack, ...], default backtrack")
+	strategy   = flag.String("strategy", BACKTRACK, fmt.Sprintf("Which strategy to use [one of: %s], default %s", strings.Join(possibleStrategies, ", "), BACKTRACK))
 	user_input = flag.String("board", "", "Sudoku to solve as a 9x9 json array, 0s representing empty squares")
 )
 
