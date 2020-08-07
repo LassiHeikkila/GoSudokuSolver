@@ -26,6 +26,6 @@ func TestBacktrackingSolution(t *testing.T) {
 	if err != nil {
 		t.Error("Failed to solve sudoku with backtracking algorithm:", err)
 	}
-	t.Log("Computation took", dur.Nanoseconds(), "ns")
+	t.Log("Computation took", dur.Milliseconds(), "ms")
 	t.Logf("Solution:\n%v\n", grid)
 }
